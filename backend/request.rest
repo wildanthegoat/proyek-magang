@@ -1,0 +1,65 @@
+//CREATE USER
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+    "name": "User Test",
+    "username": "usertest",
+    "password": "123456",
+    "confPassword": "123456",
+    "role": "user",
+    "divisi": "ICT"
+
+}
+
+###
+//GET ALL USER
+GET http://localhost:5000/users
+
+###
+//GET SINGLE USER
+GET http://localhost:5000/users/c8a7d0c2-6a7d-48fb-adbd-334a75839c7f
+
+###
+//Login
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+    "username": "super",
+    "password": "123456"
+
+}
+
+###
+//me
+GET  http://localhost:5000/me
+
+###
+//LOGOUT
+DELETE  http://localhost:5000/logout
+###
+//Melihat Semua Lokasi
+GET  http://localhost:5000/lokasi
+
+###
+//Menambah Lokasi
+POST  http://localhost:5000/lokasi
+
+Content-Type: application/json
+
+{
+    "kampus": "Kampussfs",
+    "gedung": "sfdffr",
+    "ruangan": "fhsifks"
+}
+
+###
+//Menambah Lokasi
+POST  http://localhost:5000/kategori
+
+Content-Type: application/json
+
+{
+    "nama_kategori": "Elektronik"
+}
