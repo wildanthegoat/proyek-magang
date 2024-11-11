@@ -1,91 +1,95 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import Layout from "../pages/Layout";
-
+import KategoriTambah from './KategoriTambah';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+import KonfirmasiHapus from './KonfirmasiHapus';
 
 const KategoriList = () => {
+  const [kategori, setKategori] = useState([]);
+  const { user } = useSelector((state) => state.auth);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedKategori, setSelectedKategori] = useState(null);
+
+  useEffect(() => {
+    getKategori();
+  }, []);
+
+  const getKategori = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/kategori');
+      setKategori(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDeleteClick = (kategori) => {
+    setSelectedKategori(kategori);
+    setShowModal(true); // Tampilkan modal konfirmasi
+  };
+
+  const deleteKategori = async (kategoriId) => {
+    await axios.delete(`http://localhost:5000/kategori/${kategoriId}`);
+    getKategori();
+    setShowModal(false);
+  };
+
+  const handleAddKategori = (newKategori) => {
+    setKategori((prevKategori) => [...prevKategori, newKategori]);
+  };
+
   return (
     <Layout>
       <div className="mt-11 relative overflow-x-auto shadow-md sm:rounded-lg">
         <div className="flex justify-between items-center p-3">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Data Kategori</h1>
-          <button
-            type="button"
-            className="focus:outline-none text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-          >
-            Tambahkan Kategori
-          </button>
+          {user && (user.role === "admin" || user.role === "super admin") && (
+            <KategoriTambah onAddKategori={handleAddKategori} />
+          )}
         </div>
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="px-6 py-3">Nama Kategori</th>
-              <th scope="col" className="px-6 py-3">
-                <div className="flex items-center">
-                  Jumlah Barang
-                  <a href="#">
-                    <svg
-                      className="w-3 h-3 ms-1.5"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                    </svg>
-                  </a>
-                </div>
-              </th>
-              <th scope="col" className="px-8 py-3"><span className="sr-only">Edit</span></th>
+              <th scope="col" className="px-8 py-3"><span className="sr-only">Action</span></th>
             </tr>
           </thead>
           <tbody>
-            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-              <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                Laptop PC
-              </th>
-              <td className="px-6 py-4">2</td>
-              <td className="px-6 py-4 text-right">
-                <button
-                  type="button"
-                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                >
-                  Edit
-                </button>
-              </td>
-            </tr>
-            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-              <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                Accessories
-              </th>
-              <td className="px-6 py-4">5</td>
-              <td className="px-6 py-4 text-right">
-                <button
-                  type="button"
-                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                >
-                  Edit
-                </button>
-              </td>
-            </tr>
-            <tr className="bg-white dark:bg-gray-800">
-              <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                Laptop
-              </th>
-              <td className="px-6 py-4">4</td>
-              <td className="px-6 py-4 text-right">
-                <button
-                  type="button"
-                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                >
-                  Edit
-                </button>
-              </td>
-            </tr>
+            {kategori.map((kategori, index) => (
+              <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  {kategori.nama_kategori}
+                </th>
+                <td className="px-6 py-4 text-right">
+                  <button
+                     onClick={() => handleDeleteClick(kategori)}
+                    type="button"
+                    className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    type="button"
+                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>))}
           </tbody>
         </table>
-      </div>
+        <KonfirmasiHapus
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        onDelete={() => deleteKategori(selectedKategori.uuid)}
+        message="Barang yang ada di Kategori ini akan ikut terhapus,
+                Apakah Anda yakin ingin menghapus kategori"
+        itemName={selectedKategori?.nama_kategori}
+      />
+    </div>
     </Layout>
-  )
-}
+  );
+};
 
-export default KategoriList
+export default KategoriList;

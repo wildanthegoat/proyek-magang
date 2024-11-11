@@ -27,9 +27,9 @@ export const createLokasi = async (req, res) => {
     const { kampus, gedung, ruangan } = req.body;
     try {
         await Lokasi.create({
-            kampus,
-            gedung,
-            ruangan
+            kampus: kampus,
+            gedung: gedung,
+            ruangan: ruangan
         });
         res.status(201).json({msg:"Lokasi telah ditambahkan"});
     } catch (error) {

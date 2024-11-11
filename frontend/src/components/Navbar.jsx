@@ -1,7 +1,20 @@
 import React, { useState } from 'react';
 import logo from "../logo-umbjm.png";
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { LogOut, reset } from '../features/authSlice';
+
 
 const Navbar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const {user} = useSelector((state) => state.auth);
+  const logout = () => {
+    dispatch(LogOut());
+    dispatch(reset());
+    navigate("/");
+  };
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -19,7 +32,7 @@ const Navbar = () => {
                 data-drawer-target="logo-sidebar"
                 data-drawer-toggle="logo-sidebar"
                 aria-controls="logo-sidebar"
-                className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                className="inline-flex items-center p-2 text-sm text-gray-300 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
               >
                 <span className="sr-only">Open sidebar</span>
                 <svg
@@ -46,14 +59,14 @@ const Navbar = () => {
                 <div>
                   <button
                     type="button"
-                    className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                    className="flex text-sm bg-gray-400 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                     aria-expanded={isDropdownOpen}
                     onClick={toggleDropdown}
                   >
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="w-12 h-12 rounded-full"
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2tdoZCab20cSr1nP7jjwIQwV8wSrxS4MTbg&s"
+                      src="https://cdn-icons-png.flaticon.com/512/7605/7605078.png"
                       alt="user photo"
                     />
                   </button>
@@ -61,16 +74,22 @@ const Navbar = () => {
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-52 w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600 z-50">
                     <div className="px-4 py-3">
-                      <p className="text-sm text-gray-900 dark:text-white">John Doe</p>
-                      <p className="text-sm font-medium text-gray-900 truncate dark:text-gray-300">Super Admin</p>
+                      <p className="text-sm text-gray-900 dark:text-white">{user && user.name}</p>
+                      <p className="text-sm font-medium text-gray-900 truncate dark:text-gray-300">{user && user.role.toUpperCase()}</p>
                     </div>
                     <ul className="py-1">
                       <li>
                         <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white">Tampilan</a>
                       </li>
                       <li>
-                        <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</a>
+                        <button
+                          onClick={logout}
+                          className="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                        >
+                          Log out
+                        </button>
                       </li>
+
                     </ul>
                   </div>
                 )}

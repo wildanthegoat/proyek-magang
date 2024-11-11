@@ -9,7 +9,6 @@ Content-Type: application/json
     "confPassword": "123456",
     "role": "user",
     "divisi": "ICT"
-
 }
 
 ###
@@ -45,21 +44,67 @@ GET  http://localhost:5000/lokasi
 ###
 //Menambah Lokasi
 POST  http://localhost:5000/lokasi
-
 Content-Type: application/json
 
 {
-    "kampus": "Kampussfs",
-    "gedung": "sfdffr",
-    "ruangan": "fhsifks"
+    "kampus": "Kampus 1",
+    "gedung": "Buya Hamka",
+    "ruangan": "Lab Komputer"
 }
 
 ###
-//Menambah Lokasi
-POST  http://localhost:5000/kategori
+//Edit Lokasi
+PATCH   http://localhost:5000/lokasi/cdfbd5f1-32c9-4e81-bc24-1e9a35f2e82a
+Content-Type: application/json
 
+{
+    "kampus": "Kampus 1",
+    "gedung": "Buya Hamka",
+    "ruangan": "Lab Bahasa"
+}
+
+###
+//Menambah Kategori
+POST  http://localhost:5000/kategori
 Content-Type: application/json
 
 {
     "nama_kategori": "Elektronik"
 }
+
+###
+//Melihat semua Kategori
+GET  http://localhost:5000/kategori
+
+
+###
+//Delete Kategori
+DELETE  http://localhost:5000/kategori/e5089c9d-6e31-4755-90eb-df784a90c677
+
+###
+//Melihat semua Barang
+GET http://localhost:5000/barang
+
+###
+//Menambah Barang
+POST  http://localhost:5000/barang
+Content-Type: application/json
+
+{
+    "nama_barang": "Mouse",
+    "jumlah": 10,
+    "deskripsi": "Laptop untuk lab komputer",
+    "tanggal_masuk": "2023-10-29",
+    "tanggal_keluar": "2024-10-05",
+    "kondisi": "Baik",
+    "lokasiKampusUUID": "1c9841f2-d941-4524-a890-1400488c8613",
+    "kategoriNama": "Elektronik"
+}
+
+###
+//Melihat Satu Barang
+GET  http://localhost:5000/barang/8b2385cb-bf55-415c-a843-b39f9495dde3
+
+###
+//Delete Satu Barang
+DELETE http://localhost:5000/barang/abdf17e6-0ee5-4832-b0b8-7b920c172df5

@@ -28,14 +28,31 @@ export const getUserById = async (req, res) => {
 
 export const createUser = async (req, res) => {
     const { name, username, password, confPassword, role, divisi } = req.body;
-    if(!password || password.trim() === "") {
-        return res.status(404).json({ msg: "Password tidak boleh kosong"});
-        }
+
+    // Check if the required fields are provided
+    if (!name || !username || !password || !confPassword || !role || !divisi) {
+        return res.status(400).json({ msg: "Semua field harus diisi" });
+    }
+
+    // Validate the password
+    if (!password || password.trim() === "") {
+        return res.status(400).json({ msg: "Password tidak boleh kosong" });
+    }
     if (password !== confPassword) {
         return res.status(400).json({ msg: "Password tidak cocok" });
     }
+
     try {
+        // Check if the username already exists
+        const existingUser = await Users.findOne({ where: { username: username } });
+        if (existingUser) {
+            return res.status(400).json({ msg: "Username sudah digunakan" });
+        }
+
+        // Hash the password
         const hashPassword = await argon2.hash(password);
+
+        // Create the new user
         await Users.create({
             name: name,
             username: username,
@@ -43,6 +60,7 @@ export const createUser = async (req, res) => {
             role: role,
             divisi: divisi
         });
+
         res.status(201).json({ msg: "Register Berhasil" });
     } catch (error) {
         res.status(500).json({ msg: error.message });
