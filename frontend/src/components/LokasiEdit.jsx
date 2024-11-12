@@ -9,6 +9,7 @@ const LokasiEdit = ({ isOpen, onClose, lokasi, refreshLokasi }) => {
   const [msg, setMsg] = useState('');
 
   useEffect(() => {
+    console.log('Lokasi:', lokasi);
     if (lokasi) {
       setKampus(lokasi.kampus);
       setGedung(lokasi.gedung);
@@ -21,7 +22,7 @@ const LokasiEdit = ({ isOpen, onClose, lokasi, refreshLokasi }) => {
   const updateLokasi = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch(`http://localhost:5000/lokasi/${lokasi.id}`, {
+      await axios.patch(`http://localhost:5000/lokasi/${lokasi.uuid}`, { // Make sure lokasi.uuid is the correct UUID
         kampus: kampus,
         gedung: gedung,
         ruangan: ruangan
@@ -34,6 +35,7 @@ const LokasiEdit = ({ isOpen, onClose, lokasi, refreshLokasi }) => {
       }
     }
   };
+  
 
   if (!isOpen) return null;
 
