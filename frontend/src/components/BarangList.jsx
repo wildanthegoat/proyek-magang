@@ -4,13 +4,18 @@ import BarangTambah from "./BarangTambah";
 import { useSelector } from "react-redux";
 import KonfirmasiHapus from "./KonfirmasiHapus";
 import BarangDetail from "./BarangDetail"; // Import BarangDetailModal
+import BarangEdit from "./BarangEdit";
 
 const BarangList = () => {
   const [barang, setBarang] = useState([]);
   const { user } = useSelector((state) => state.auth);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedBarang, setSelectedBarang] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const itemsPerPage = 5;
 
   useEffect(() => {
     getBarang();
@@ -47,12 +52,50 @@ const BarangList = () => {
     setShowDetailModal(true); // Tampilkan modal detail
   };
 
+  const handleEditClick = (barang) => {
+    setSelectedBarang(barang);
+    setShowEditModal(true); // Tampilkan modal edit
+  };
+
+  const filteredBarang = barang.filter((kat) =>
+    kat.nama_barang.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  const totalPages = Math.ceil(barang.length / itemsPerPage);
+  const currentItems = filteredBarang.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    setCurrentPage(1); // Reset to first page on search
+  };
+
   return (
     <div className="mt-11 relative overflow-x-auto shadow-md sm:rounded-lg">
       <div className="flex justify-between items-center p-3">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
           Data Barang
         </h1>
+        <div className="relative flex ml-auto p-2">
+            <input
+              type="text"
+              id="default-search"
+              placeholder="Search by Nama Kategori"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
         {user && (user.role === "admin" || user.role === "super admin") && (
           <BarangTambah />
         )}
@@ -81,7 +124,7 @@ const BarangList = () => {
           </tr>
         </thead>
         <tbody>
-          {barang.map((barang, index) => (
+          {currentItems.map((barang, index) => (
             <tr
               key={index}
               className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
@@ -112,6 +155,7 @@ const BarangList = () => {
                   Detail
                 </button>
                 <button
+                  onClick={() => handleEditClick(barang)}
                   type="button"
                   className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                 >
@@ -122,6 +166,34 @@ const BarangList = () => {
           ))}
         </tbody>
       </table>
+      <div className="flex flex-col md:flex-row justify-between items-center p-2">
+          <span className="text-sm text-gray-700 dark:text-gray-400">
+            Showing Page{" "}
+            <span className="font-semibold text-gray-900 dark:text-white">
+              {currentPage}
+            </span> 
+            {" "}of{" "} 
+            <span class="font-semibold text-gray-900 dark:text-white">
+              {totalPages}
+            </span>{" "}Pages
+          </span>
+          <div className="inline-flex ">
+            <button
+              onClick={handlePreviousPage}
+              disabled={currentPage === 1}
+              className="flex items-center justify-center px-3 h-8 text-sm font-medium text-gray-700 bg-gray-200 rounded-s border-gray-600 hover:bg-gray-400 focus:ring-4 focus:ring-gray-200 focus:z-10"
+            >
+              Prev
+            </button>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className="flex items-center justify-center px-3 h-8 text-sm font-medium text-gray-700 bg-gray-200 rounded-e border-gray-600  hover:bg-gray-400 focus:ring-4 focus:ring-gray-200 focus:z-10"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       <KonfirmasiHapus
         show={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
@@ -135,6 +207,12 @@ const BarangList = () => {
         onClose={() => setShowDetailModal(false)}
         barang={selectedBarang}
       />
+      <BarangEdit
+          barangId={selectedBarang?.uuid}
+          show={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onSave={getBarang}
+        />
     </div>
   );
 };

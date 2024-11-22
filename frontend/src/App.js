@@ -19,8 +19,6 @@ function App() {
           <Route path="/lokasi" element={<LokasiList/>}/>
           <Route path="/kategori" element={<KategoriList/>}/>
           <Route path="/users" element={<UserList/>}/>
-
-
         </Routes>
       </BrowserRouter>
     </div>

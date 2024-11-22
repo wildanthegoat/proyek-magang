@@ -108,9 +108,58 @@ export const createBarang = async (req, res) => {
 };
 
 
-export const updateBarang = (req, res) =>{
-    
-}
+export const updateBarang = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const {
+        nama_barang,
+        jumlah,
+        deskripsi,
+        tanggal_masuk,
+        tanggal_keluar,
+        kondisi,
+        lokasiKampusUUID,
+        kategoriNama
+      } = req.body;
+  
+      const barang = await Barang.findOne({ where: { uuid: id } });
+      if (!barang) {
+        return res.status(404).json({ msg: "Barang not found" });
+      }
+  
+      // Update the Barang entry
+      barang.nama_barang = nama_barang;
+      barang.jumlah = jumlah;
+      barang.deskripsi = deskripsi;
+      barang.tanggal_masuk = tanggal_masuk;
+      barang.tanggal_keluar = tanggal_keluar;
+      barang.kondisi = kondisi;
+  
+      // Find and set the associated Lokasi
+      if (lokasiKampusUUID) {
+        const lokasi = await Lokasi.findOne({ where: { uuid: lokasiKampusUUID } });
+        if (!lokasi) {
+          return res.status(404).json({ msg: "Lokasi not found" });
+        }
+        barang.lokasiKampusUUID = lokasi.uuid;
+      }
+  
+      // Find and set the associated Kategori
+      if (kategoriNama) {
+        const kategori = await Kategori.findOne({ where: { nama_kategori: kategoriNama } });
+        if (!kategori) {
+          return res.status(404).json({ msg: "Kategori tidak ditemukan" });
+        }
+        barang.kategoriNama = kategori.nama_kategori;
+      }
+  
+      await barang.save();
+  
+      res.status(200).json({ msg: "Barang berhasil diperbarui" });
+    } catch (error) {
+      res.status(500).json({ msg: error.message });
+    }
+  };
 
 export const deleteBarang = async (req, res) =>{
     try {
