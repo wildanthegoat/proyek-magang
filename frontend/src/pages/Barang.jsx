@@ -5,9 +5,8 @@ import Layout from './Layout'
 const Barang = () => {
   return (
     <Layout>
-    <BarangList />
+      <BarangList />
     </Layout>
-
   )
 }
 
